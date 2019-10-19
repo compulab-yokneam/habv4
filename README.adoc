@@ -1,2 +1,35 @@
-# habv4
-High Assurance Boot
+# High Assurance Boot
+
+## Prerequisites
+* NXP
+** https://www.nxp.com/design/i.mx-developer-resources/i.mx-software-and-development-tool:IMX-SW[`Code Signing Tools`] to download and install.
+** https://source.codeaurora.org/external/imx/uboot-imx/plain/doc/imx/habv4/introduction_habv4.txt?h=imx_v2018.03_4.14.98_2.0.0_ga[`Key Generating How To.`] Generate keys as described in this manual.
+** https://source.codeaurora.org/external/imx/uboot-imx/plain/doc/imx/habv4/guides/mx8m_mx8mm_secure_boot.txt?h=imx_v2018.03_4.14.98_2.0.0_ga[`Read & Understand.`] The CompuLab tools implemented accordingly.
+
+* CompuLab BSP
+** imx-boot
+[source,console]
+FLASH_BD=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/imx-boot/*/git/iMX8M
+
+** kernel
+[source,console]
+IMAGE=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/linux-imx/*/build/arch/arm64/boot/Image
+
+## Signing
+* imx-boot flash signing
+[source,console]
+export FLASH_BD=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/imx-boot/*/git/iMX8M
+/path/to/u_signing
+# Output will get stored at:
+ls M/signed_flash.bin
+
+* kernel image signing
+[source,console]
+export IMAGE=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/linux-imx/*/build/arch/arm64/boot/Image
+/path/to/k_signing ${IMAGE}
+# Output will get stored at:
+ls ${IMAGE}_signed
+
+* fuse sript generator
+[source,console]
+/path/to/fusing
