@@ -14,11 +14,11 @@ done
 }
 
 function prepare_soc_files() {
-FLASH_BD=${FLASH_BD:-"/home/val/Devel/Work/imx8mm/u-boot/SecureBoot/y/iMX8M"}
-make -C ${FLASH_BD} SOC=iMX8M${SOC} ${DTB} clean
-make -C ${FLASH_BD} SOC=iMX8M${SOC} ${DTB} flash_evk 2>&1 | awk ''1  > ${SOC}/flash_evk.log
-make -C ${FLASH_BD} SOC=iMX8M${SOC} ${DTB} print_fit_hab > ${SOC}/print_fit_hab.log
-cp -v ${FLASH_BD}/flash.bin ${SOC}/
+FLASH_BD=${FLASH_BD:-"/home/val/Devel/Work/imx8mm/u-boot/SecureBoot/y"}
+make -f soc.mak -C ${FLASH_BD}/iMX8M SOC=iMX8M${SOC} ${DTB} clean
+make -f soc.mak -C ${FLASH_BD}/iMX8M SOC=iMX8M${SOC} ${DTB} flash_evk 2>&1 | awk ''1  > ${SOC}/flash_evk.log
+make -f soc.mak -C ${FLASH_BD}/iMX8M SOC=iMX8M${SOC} ${DTB} print_fit_hab > ${SOC}/print_fit_hab.log
+cp -v ${FLASH_BD}/iMX8M/flash.bin ${SOC}/
 }
 
 #
@@ -62,6 +62,6 @@ cp ${SOC}/${ifile} ${SOC}/${ifile}_signed
 dd if=${SOC}/csf_spl.bin of=${SOC}/${ifile}_signed seek=$((${csf_off})) bs=1 conv=notrunc
 dd if=${SOC}/csf_fit.bin of=${SOC}/${ifile}_signed seek=$((${sld_csf_off})) bs=1 conv=notrunc
 
-cp ${SOC}/${ifile}_signed ${FLASH_BD}/
+cp ${SOC}/${ifile}_signed ${FLASH_BD}/iMX8M/
 
 rm -rf ${SOC}

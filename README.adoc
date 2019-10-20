@@ -45,10 +45,10 @@ IMAGE=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/linux-imx/*/build/arch/arm6
 ## Signing
 * imx-boot image signing
 [source,console]
-export FLASH_BD=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/imx-boot/*/git/iMX8M
+export FLASH_BD=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/imx-boot/*/git
 /path/to/u_signing
 # Output will be stored at:
-ls ${FLASH_BD}/flash.bin_signed
+ls ${FLASH_BD}/iMX8M/flash.bin_signed
 
 * kernel image signing
 [source,console]
