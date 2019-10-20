@@ -1,0 +1,67 @@
+#!/bin/bash -ex
+
+# Issue thiese steps before the start signing
+
+function get_files() {
+URL="https://source.codeaurora.org/external/imx/uboot-imx/plain/doc/imx/habv4/csf_examples/mx8m_mx8mm"
+FILES="csf_fit.txt csf_spl.txt"
+for F in ${FILES};do
+	in_file=${SOC}/in_${F}
+	[[ -e ${in_file} ]] && continue
+	wget ${URL}/${F}?h=imx_v2018.03_4.14.98_2.0.0_ga --output-document=${in_file}
+	sed -i 's/\(Blocks = \).*/\1 \\/g;/Blocks/q' ${in_file}
+done
+}
+
+function prepare_soc_files() {
+FLASH_BD=${FLASH_BD:-"/home/val/Devel/Work/imx8mm/u-boot/SecureBoot/y/iMX8M"}
+make -C ${FLASH_BD} SOC=iMX8M${SOC} ${DTB} clean
+make -C ${FLASH_BD} SOC=iMX8M${SOC} ${DTB} flash_evk 2>&1 | awk ''1  > ${SOC}/flash_evk.log
+make -C ${FLASH_BD} SOC=iMX8M${SOC} ${DTB} print_fit_hab > ${SOC}/print_fit_hab.log
+cp -v ${FLASH_BD}/flash.bin ${SOC}/
+}
+
+#
+
+SOC=${SOC:-M}
+[[ ${SOC} = 'Q' ]] && plat=imx8mq || plat=imx8mm
+
+SecureBootPath=${SecureBootPath:-$(pwd)}
+CST=${SecureBootPath}/bin/cst
+
+command -v ${CST} &>/dev/null
+if [[ $? -ne 0 ]];then
+cat << eom
+"${CST} - binary is missing, exiting ..."
+eom
+exit 1
+fi
+
+ifile=flash.bin
+mkdir -p ${SOC}
+get_files
+prepare_soc_files
+
+eval $(awk  -F":" '(/hab block/)&&(gsub(/ /,"_",$1))&&($0=$1"=\""$2"\"")' ${SOC}/flash_evk.log)
+
+_spl_hab_block+=" \"${SOC}/${ifile}\""
+_sld_hab_block+=" \"${SOC}/${ifile}\""
+
+blocks=$(awk -v SOC=${SOC} -v ifile=${ifile} '(/^0x/)&&($0=","$0" \""SOC"/"ifile"\"")' ORS=" " ${SOC}/print_fit_hab.log)
+
+(cat ${SOC}/in_csf_fit.txt ; cat <<< $_sld_hab_block" \ " ; cat <<< ${blocks} ) > ${SOC}/csf_fit.txt
+(cat ${SOC}/in_csf_spl.txt ; cat <<< $_spl_hab_block) > ${SOC}/csf_spl.txt
+
+${CST} -i ${SOC}/csf_spl.txt -o ${SOC}/csf_spl.bin
+${CST} -i ${SOC}/csf_fit.txt -o ${SOC}/csf_fit.bin
+
+eval $(awk '(/csf_off|sld_csf_off/)&&($0=$1"="$2)' ${SOC}/flash_evk.log) 
+
+cp ${SOC}/${ifile} ${SOC}/${ifile}_signed
+
+dd if=${SOC}/csf_spl.bin of=${SOC}/${ifile}_signed seek=$((${csf_off})) bs=1 conv=notrunc
+dd if=${SOC}/csf_fit.bin of=${SOC}/${ifile}_signed seek=$((${sld_csf_off})) bs=1 conv=notrunc
+
+cp ${SOC}/${ifile}_signed ${FLASH_BD}/
+
+rm -rf ${SOC}
