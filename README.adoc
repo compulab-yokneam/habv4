@@ -16,18 +16,18 @@ FLASH_BD=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/imx-boot/*/git/iMX8M
 IMAGE=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/linux-imx/*/build/arch/arm64/boot/Image
 
 ## Signing
-* imx-boot flash signing
+* imx-boot image signing
 [source,console]
 export FLASH_BD=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/imx-boot/*/git/iMX8M
 /path/to/u_signing
-# Output will get stored at:
+# Output will be stored at:
 ls M/signed_flash.bin
 
 * kernel image signing
 [source,console]
 export IMAGE=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/linux-imx/*/build/arch/arm64/boot/Image
 /path/to/k_signing ${IMAGE}
-# Output will get stored at:
+# Output will be stored at:
 ls ${IMAGE}_signed
 
 * fuse sript generator
