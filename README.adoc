@@ -2,12 +2,12 @@
 
 ## Prerequisites
 * NXP
-** https://www.nxp.com/design/i.mx-developer-resources/i.mx-software-and-development-tool:IMX-SW[`Code Signing Tools`]. Download and deploy.
+** https://www.nxp.com/design/i.mx-developer-resources/i.mx-software-and-development-tool:IMX-SW[`Code Signing Tools`] Download and deploy.
 [source,console]
-mkdir /path/to/CST
+mkdir -p /path/to/CST
 tar -C /path/to/CST -xf /path/to/cst-3.2.0.tgz
 
-** https://source.codeaurora.org/external/imx/uboot-imx/plain/doc/imx/habv4/introduction_habv4.txt?h=imx_v2018.03_4.14.98_2.0.0_ga[`Key Generating How To.`].
+** https://source.codeaurora.org/external/imx/uboot-imx/plain/doc/imx/habv4/introduction_habv4.txt?h=imx_v2018.03_4.14.98_2.0.0_ga[`Key Generating How To`]
 
 *** Generating 2048-bit PKI tree on CST v3.2.0:
 [source,console]
@@ -33,30 +33,26 @@ cd ../crts
 
 ** https://source.codeaurora.org/external/imx/uboot-imx/plain/doc/imx/habv4/guides/mx8m_mx8mm_secure_boot.txt?h=imx_v2018.03_4.14.98_2.0.0_ga[`Read & Understand.`] The CompuLab tools implemented accordingly.
 
-* CompuLab BSP
-** imx-boot
+* CompuLab HABV4 tools
 [source,console]
-FLASH_BD=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/imx-boot/*/git/iMX8M
-
-** kernel
-[source,console]
-IMAGE=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/linux-imx/*/build/arch/arm64/boot/Image
+cd /path/to/CST/release/linux64
+git clone https://github.com/compulab-yokneam/habv4.git
 
 ## Signing
 * imx-boot image signing
 [source,console]
 export FLASH_BD=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/imx-boot/*/git
-/path/to/u_signing
+/path/to/CST/release/linux64/habv4/tools/u_signing
 # Output will be stored at:
 ls ${FLASH_BD}/iMX8M/flash.bin_signed
 
 * kernel image signing
 [source,console]
 export IMAGE=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/linux-imx/*/build/arch/arm64/boot/Image
-/path/to/k_signing ${IMAGE}
+/path/to/CST/release/linux64/habv4/tools/k_signing ${IMAGE}
 # Output will be stored at:
 ls ${IMAGE}_signed
 
-* fuse sript generator
+* fuse script generator
 [source,console]
-/path/to/fusing
+/path/to/CST/release/linux64/habv4/tools/fusing
