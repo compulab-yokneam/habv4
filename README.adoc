@@ -24,7 +24,7 @@ eof
 
 *** Generating SRK Table and SRK Hash in Linux 64-bit machines:
 [source,console]
-cd ../crts
+cd /path/to/CST/release/crts
 ../linux64/bin/srktool -h 4 -t SRK_1_2_3_4_table.bin -e \
 	SRK_1_2_3_4_fuse.bin -d sha256 -c \
 	SRK1_sha256_2048_65537_v3_ca_crt.pem,\
@@ -40,16 +40,20 @@ cd /path/to/CST/release/linux64
 git clone https://github.com/compulab-yokneam/habv4.git
 
 ## Signing
+Set a desire machine firts:
+[source,console]
+export MACHINE=ucm_imx8m_mini
+
 * imx-boot image signing
 [source,console]
-export FLASH_BD=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/imx-boot/*/git
+export FLASH_BD=${BUILDDIR}/tmp/work/${MACHINE}-poky-linux/imx-boot/*/git
 /path/to/CST/release/linux64/habv4/tools/u_signing
 # Output will be stored at:
 ls ${FLASH_BD}/iMX8M/flash.bin_signed
 
 * kernel image signing
 [source,console]
-export IMAGE=${BUILDDIR}/tmp/work/ucm_imx8m_mini-poky-linux/linux-imx/*/build/arch/arm64/boot/Image
+export IMAGE=${BUILDDIR}/tmp/work/${MACHINE}-poky-linux/linux-imx/*/build/arch/arm64/boot/Image
 /path/to/CST/release/linux64/habv4/tools/k_signing ${IMAGE}
 # Output will be stored at:
 ls ${IMAGE}_signed
